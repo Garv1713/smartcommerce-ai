@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCommerce AI - E-commerce Intelligence Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin-top: 0.3rem;
+        }
+
+        /* Navigation */
+        .nav {
+            background: white;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 1rem 0;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .icon-blue { background: #e3f2fd; color: #1976d2; }
+        .icon-green { background: #e8f5e9; color: #388e3c; }
+        .icon-orange { background: #fff3e0; color: #f57c00; }
+        .icon-purple { background: #f3e5f5; color: #7b1fa2; }
+
+        /* Metrics */
+        .metric {
+            margin: 1rem 0;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .positive { color: #48bb78; }
+        .negative { color: #f56565; }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f7fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-outline:hover {
+            background: #f7fafc;
+        }
+
+        /* Status badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-urgent {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .badge-warning {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge-success {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        /* Loading and Empty States */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-items {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.875rem;
+            }
+            
+            td, th {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🚀 SmartCommerce AI</h1>
+        <p>Intelligent E-commerce Management Dashboard</p>
+    </header>
+
+    <nav class="nav">
+        <ul class="nav-items">
+            <li class="nav-item active" onclick="switchTab('overview')">Overview</li>
+            <li class="nav-item" onclick="switchTab('pricing')">Smart Pricing</li>
+            <li class="nav-item" onclick="switchTab('support')">AI Support</li>
+            <li class="nav-item" onclick="switchTab('inventory')">Inventory</li>
+            <li class="nav-item" onclick="switchTab('settings')">Settings</li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Total Revenue</h3>
+                        <div class="card-icon icon-green">💰</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">
+                            $12,459
+                            <span class="metric-change positive">+12.5%</span>
+                        </div>
+                        <div class="metric-label">Last 7 days</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Active Products</h3>
+                        <div class="card-icon icon-blue">📦</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">5</div>
+                        <div class="metric-label">Products monitored</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Support Tickets</h3>
+                        <div class="card-icon icon-orange">💬</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">
+                            8
+                            <span class="metric-change negative">-20%</span>
+                        </div>
+                        <div class="metric-label">Pending responses</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Low Stock Alerts</h3>
+                        <div class="card-icon icon-purple">⚠️</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">Products need reorder</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3 class="card-title" style="margin-bottom: 1rem;">Recent Activity</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2 hours ago</td>
+                            <td>Price Alert</td>
+                            <td>Wireless Earbuds price suggestion</td>
+                            <td><span class="badge badge-warning">Review</span></td>
+                        </tr>
+                        <tr>
+                            <td>3 hours ago</td>
+                            <td>Support</td>
+                            <td>Auto-replied to shipping inquiry</td>
+                            <td><span class="badge badge-success">Resolved</span></td>
+                        </tr>
+                        <tr>
+                            <td>5 hours ago</td>
+                            <td>Inventory</td>
+                            <td>Yoga Mat stock below threshold</td>
+                            <td><span class="badge badge-urgent">Urgent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="section">
+            <h2 style="margin-bottom: 1.5rem;">Smart Pricing Recommendations</h2>
+            
+            <div class="table-container">
+                <table id="pricingTable">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Current Price</th>
+                            <th>Suggested Price</th>
+                            <th>Reason</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loading pricing data...</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="refreshPricing()">
+                    🔄 Refresh Suggestions
+                </button>
+                <button class="btn btn-outline" onclick="uploadData()">
+                    📤 Upload Sales Data
+                </button>
+            </div>
+        </section>
+
+        <!-- Support Section -->
+        <section id="support" class="section">
+            <h2 style="margin-bottom: 1.5rem;">AI Customer Support</h2>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title">New Ticket</h3>
+                    <form onsubmit="handleSupportTicket(event)">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-input" id="ticketCategory">
+                                <option>Shipping</option>
+                                <option>Product</option>
+                                <option>Returns</option>
+                                <option>Payment</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-input" id="ticketSubject" placeholder="Order not received">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Customer Message</label>
+                            <textarea class="form-textarea" id="ticketMessage" placeholder="Customer's message..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            🤖 Generate AI Response
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="card" id="aiResponseCard" style="display: none;">
+                    <h3 class="card-title">AI Generated Response</h3>
+                    <div id="aiResponse" style="background: #f7fafc; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                        <!-- AI response will appear here -->
+                    </div>
+                    <button class="btn btn-success" onclick="approveResponse()">
+                        ✅ Send Response
+                    </button>
+                    <button class="btn btn-outline" onclick="editResponse()">
+                        ✏️ Edit
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container" style="margin-top: 2rem;">
+                <h3 class="card-title">Recent Support Tickets</h3>
+                <table id="supportTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Category</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loading tickets...</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Inventory Section -->
+        <section id="inventory" class="section">
+            <h2 style="margin-bottom: 1.5rem;">Inventory Predictions</h2>
+            
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Current Stock</th>
+                            <th>Daily Sales</th>
+                            <th>Days Until Stockout</th>
+                            <th>Reorder In</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loading inventory data...</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="refreshInventory()">
+                    🔄 Update Predictions
+                </button>
+                <button class="btn btn-outline" onclick="exportInventoryReport()">
+                    📊 Export Report
+                </button>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section">
+            <h2 style="margin-bottom: 1.5rem;">Settings & Integration</h2>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title">API Configuration</h3>
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label">OpenAI API Key</label>
+                            <input type="password" class="form-input" placeholder="sk-..." id="openaiKey">
+                            <small style="color: #718096;">Optional: For enhanced AI responses</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Store Platform</label>
+                            <select class="form-input">
+                                <option>Shopify</option>
+                                <option>WooCommerce</option>
+                                <option>Amazon</option>
+                                <option>Manual Upload</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="saveSettings()">
+                            💾 Save Settings
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Data Management</h3>
+                    <p style="margin-bottom: 1rem;">Upload your CSV files to get started</p>
+                    <input type="file" id="fileInput" accept=".csv" style="display: none;" onchange="handleFileUpload(event)">
+                    <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                        📁 Upload Data Files
+                    </button>
+                    <button class="btn btn-outline" onclick="generateSampleData()">
+                        🎲 Generate Sample Data
+                    </button>
+                    <button class="btn btn-outline" onclick="exportAllData()">
+                        💾 Export All Data
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for responses -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Edit Response</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Include the AI modules code here
+        ${require('./ai-modules.js')}
+
+        // Include the data generator code here
+        ${require('./ecommerce-data-generator.js')}
+
+        // Application state
+        let appData = {
+            salesData: [],
+            inventoryData: [],
+            supportTickets: [],
+            priceHistory: [],
+            products: []
+        };
+
+        // Initialize with sample data
+        function initializeApp() {
+            // Generate sample data
+            const { salesData, inventoryData, products } = generateProductData();
+            const supportTickets = generateSupportTickets();
+            const priceHistory = generatePriceHistory(products);
+
+            appData = {
+                salesData,
+                inventoryData,
+                supportTickets,
+                priceHistory,
+                products
+            };
+
+            // Initialize AI modules
+            window.pricingEngine = new PricingEngine(salesData, priceHistory, inventoryData);
+            window.supportAssistant = new SupportAssistant(supportTickets);
+            window.inventoryPredictor = new InventoryPredictor(salesData, inventoryData);
+
+            // Load initial data
+            loadPricingData();
+            loadSupportData();
+            loadInventoryData();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Pricing functions
+        function loadPricingData() {
+            const tbody = document.querySelector('#pricingTable tbody');
+            tbody.innerHTML = '';
+
+            appData.products.forEach(product => {
+                const suggestion = window.pricingEngine.suggestPrice(product.id);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>$${suggestion.currentPrice}</td>
+                    <td>$${suggestion.suggestedPrice}</td>
+                    <td>${suggestion.reason}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="applyPrice('${product.id}', ${suggestion.suggestedPrice})">
+                            Apply
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function refreshPricing() {
+            loadPricingData();
+            showNotification('Pricing suggestions updated!');
+        }
+
+        function applyPrice(productId, price) {
+            showNotification(`Price updated to $${price} for product ${productId}`);
+        }
+
+        // Support functions
+        function handleSupportTicket(event) {
+            event.preventDefault();
+            
+            const category = document.getElementById('ticketCategory').value;
+            const subject = document.getElementById('ticketSubject').value;
+            const message = document.getElementById('ticketMessage').value;
+
+            const response = window.supportAssistant.generateResponse(subject, message, category);
+            
+            document.getElementById('aiResponse').textContent = response;
+            document.getElementById('aiResponseCard').style.display = 'block';
+        }
+
+        function loadSupportData() {
+            const tbody = document.querySelector('#supportTable tbody');
+            tbody.innerHTML = '';
+
+            appData.supportTickets.slice(0, 10).forEach(ticket => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${ticket.date}</td>
+                    <td>${ticket.customerEmail}</td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.subject}</td>
+                    <td><span class="badge badge-${ticket.status === 'resolved' ? 'success' : 'warning'}">${ticket.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function approveResponse() {
+            showNotification('Response sent to customer!');
+            document.getElementById('ticketSubject').value = '';
+            document.getElementById('ticketMessage').value = '';
+            document.getElementById('aiResponseCard').style.display = 'none';
+        }
+
+        function editResponse() {
+            const response = document.getElementById('aiResponse').textContent;
+            document.getElementById('modalTitle').textContent = 'Edit Response';
+            document.getElementById('modalBody').innerHTML = `
+                <textarea class="form-textarea" id="editedResponse" style="min-height: 200px;">${response}</textarea>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="saveEditedResponse()">Save</button>
+                    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function saveEditedResponse() {
+            const edited = document.getElementById('editedResponse').value;
+            document.getElementById('aiResponse').textContent = edited;
+            closeModal();
+        }
+
+        // Inventory functions
+        function loadInventoryData() {
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
+
+            const predictions = window.inventoryPredictor.getAllPredictions();
+            
+            predictions.forEach(pred => {
+                const row = document.createElement('tr');
+                const badgeClass = pred.urgent ? 'badge-urgent' : 
+                                  pred.reorderIn <= 3 ? 'badge-warning' : 'badge-success';
+                
+                row.innerHTML = `
+                    <td>${pred.productName}</td>
+                    <td>${pred.currentStock}</td>
+                    <td>${pred.dailySales}</td>
+                    <td>${pred.daysUntilStockout}</td>
+                    <td>${pred.reorderIn} days</td>
+                    <td><span class="badge ${badgeClass}">${pred.urgent ? 'Urgent' : 'OK'}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function refreshInventory() {
+            loadInventoryData();
+            showNotification('Inventory predictions updated!');
+        }
+
+        // File handling
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                showNotification(`Uploaded ${file.name}`);
+                // In real app, parse CSV and update appData
+            }
+        }
+
+        function generateSampleData() {
+            initializeApp();
+            showNotification('Sample data generated successfully!');
+        }
+
+        function exportAllData() {
+            // Create a zip or multiple downloads
+            downloadCSV(appData.salesData, 'sales_data.csv');
+            downloadCSV(appData.supportTickets, 'support_tickets.csv');
+            downloadCSV(appData.inventoryData, 'inventory_data.csv');
+            downloadCSV(appData.priceHistory, 'price_history.csv');
+        }
+
+        // Settings
+        function saveSettings() {
+            const apiKey = document.getElementById('openaiKey').value;
+            if (apiKey) {
+                window.OPENAI_API_KEY = apiKey;
+                localStorage.setItem('openai_key', apiKey);
+            }
+            showNotification('Settings saved!');
+        }
+
+        // Utility functions
+        function showNotification(message) {
+            // Simple notification (could be enhanced)
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 6px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function uploadData() {
+            document.getElementById('fileInput').click();
+        }
+
+        function exportInventoryReport() {
+            const predictions = window.inventoryPredictor.getAllPredictions();
+            downloadCSV(predictions, 'inventory_report.csv');
+        }
+
+        // Initialize app on load
+        window.addEventListener('load', initializeApp);
+
+        // Add slide-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
